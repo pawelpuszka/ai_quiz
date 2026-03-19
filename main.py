@@ -1,10 +1,8 @@
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
-from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 
-from question_structure import Question, Quiz, UserAnswers, AIAnalyzer, QuizAssessement
+from question_structure import Quiz, UserAnswers, AIAnalyzer, QuizAssessement
 
 MODEL = "gpt-5-mini"
 
