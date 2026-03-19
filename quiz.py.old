@@ -1,0 +1,77 @@
+from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
+
+from question_structure import Question, Quiz, UserAnswers, AIAnalyzer, QuizAssessement
+
+
+load_dotenv()
+
+MODEL = "gpt-5-mini"
+
+
+model = init_chat_model(model=MODEL, model_provider='openai')
+structured_model = model.with_structured_output(Quiz)
+
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You’re an expert in your field. You create engaging and educational quizzes."),
+        ("human", "Create a quiz on the topic: {topic}. Difficulty level: {difficulty}. Number of questions: {count}.")
+    ]
+)
+
+result = prompt | structured_model
+quiz = result.invoke({
+    "topic": "Python programming language",
+    "difficulty": "easy",
+    "count": 5
+})
+
+list_of_answers = []
+
+for q in quiz.questions:
+    print(q.question_text)
+    for i, a in zip(q.index, q.answers):
+        print(f"{i}) {a}")
+    user_answer_index = input("Your answer: ")
+    user_answers = UserAnswers()
+    user_answers.question = q.question_text
+    user_answers.correct_answer = q.correct_answer_index
+    user_answers.user_answer = user_answer_index
+    list_of_answers.append(user_answers)
+    print()
+
+structured_model = model.with_structured_output(AIAnalyzer)
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are responsible for compiling the answers based on the data provided."),
+        ("human", "This is the {raw_data} quiz data required for analysis")
+    ]
+)
+
+result = prompt | structured_model
+questions_analyzed = result.invoke({
+    "raw_data": [a.model_dump() for a in list_of_answers]
+})
+
+for a in questions_analyzed.answers:
+    print(a.ai_answer)
+
+
+structured_model = model.with_structured_output(QuizAssessemnet)
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are responsible for quiz answers final assessment"),
+        ("human", "This is the quiz analysis {quiz_analysis}. The score in exactly number_of_correct_questions/format number_of_questions format. No spaces, no words")
+    ]
+)
+
+result = prompt | structured_model
+quiz_assessement: QuizAssessement = result.invoke({
+    "quiz_analysis": [a.ai_answer for a in questions_analyzed.answers]
+})
+
+print("Final result: ", quiz_assessement.assessement)
