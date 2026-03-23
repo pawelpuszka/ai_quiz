@@ -25,7 +25,7 @@ class AIAnalyzer(BaseModel):
 	answers: List[UserAnswers] = Field(description="A list of objects containing the data required for a correct analysis of the user’s response")
 
 
-class QuizAssessement(BaseModel):
+class QuizAssessment(BaseModel):
 	assessement: str = Field(description="Quiz final assessment. The score in exactly number_of_correct_questions/format number_of_questions format. No spaces, no words")
 
 
