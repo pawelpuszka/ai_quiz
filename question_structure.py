@@ -78,7 +78,3 @@ class QuizAssessment(BaseModel):
 		if not (left.isdigit() and right.isdigit()):
 			raise ValueError("assessment must be in 'x/y' numeric format")
 		return f"{int(left)}/{int(right)}"
-
-
-
-
