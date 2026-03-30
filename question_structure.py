@@ -52,10 +52,10 @@ class Quiz(BaseModel):
 
 
 class UserAnswers(BaseModel):
-	question: Optional[str] = Field(default=None, description="The question")
-	correct_answer: Optional[str] = Field(default=None, description="the correct answer to the question")
-	user_answer: Optional[str] = Field(default=None, description="User's answer")
-	ai_answer: Optional[str] = Field(default=None, description="Answer assessment – the question, the user’s answer and the correct answer. If the user gave an incorrect answer – a brief explanation of why")
+	question: str|None = Field(default=None, description="The question")
+	correct_answer: str|None = Field(default=None, description="the correct answer to the question")
+	user_answer: str|None = Field(default=None, description="User's answer")
+	ai_answer: str|None = Field(default=None, description="Answer assessment – the question, the user’s answer and the correct answer. If the user gave an incorrect answer – a brief explanation of why")
 
 
 class AIAnalyzer(BaseModel):
